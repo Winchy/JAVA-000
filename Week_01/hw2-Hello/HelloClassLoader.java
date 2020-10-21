@@ -10,7 +10,7 @@ public class HelloClassLoader extends ClassLoader {
 
 	public static void main(String[] args) {
 		try {
-			Class helloClass = new HelloClassLoader().findClass("Hello");
+			Class<?> helloClass = new HelloClassLoader().findClass("Hello");
 			invoke(helloClass, "hello");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
