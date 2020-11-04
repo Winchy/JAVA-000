@@ -5,6 +5,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 public class CustomHeaderFilter extends ChannelInboundHandlerAdapter implements HttpRequestFilter {
+    private String header;
+    private String value;  
+
+    public CustomHeaderFilter(String header, String value) {
+
+    }
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush();
@@ -15,6 +22,7 @@ public class CustomHeaderFilter extends ChannelInboundHandlerAdapter implements 
         try {
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
             filter(fullRequest, ctx);
+            super.channelRead(ctx, msg);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -22,7 +30,7 @@ public class CustomHeaderFilter extends ChannelInboundHandlerAdapter implements 
 
     @Override
     public void filter(FullHttpRequest fullRequest, ChannelHandlerContext ctx) {
-        fullRequest.headers().set("CUSTOM", "HELLO");
+        fullRequest.headers().set(header, value);
     }
   
 }
