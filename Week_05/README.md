@@ -1,6 +1,8 @@
-# Spring Bean 的装配
+# 作业
 
-**Spring Bean 的装配**
+## 周四第二题
+
+工程：hwk05-1
 
 - XML配置
 
@@ -106,4 +108,38 @@
   }
   ```
 
-- `@AutoConfigurationPackage`
+## 周六第四题
+
+工程：hwk05-2
+
+实现自动配置和Starter流程：
+
+- 为主类添加`@SpringBootApplication`注解，该注解包含`@EnableAutoConfiguration`;
+- 创建对象`io.kimmking.config.SchoolAutoConfiguration`并添加注解`@Configuration`;
+- 在`io.kimmking.config.SchoolAutoConfiguration`中实现Bean工厂方法：
+    
+    ```java
+    @Bean("student100")
+	  public Student getStudent100() {
+      return new Student(100, "liangchaowei");
+    }
+    ```
+
+- 在resources目录下创建`META-INF`目录，在该目录下创建文件`spring.factories`，并输入：
+
+    ``` text
+    org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    io.kimmking.config.SchoolAutoConfiguration
+    ```
+
+- 在`META-INF`目录下创建文件`spring.provides`，输入：
+
+  ```
+  provides: school-starter
+  ```
+
+## 周六第六题
+
+工程：hwk05-2
+
+实现：`io.kimmking.jdbc.JDBCService`
