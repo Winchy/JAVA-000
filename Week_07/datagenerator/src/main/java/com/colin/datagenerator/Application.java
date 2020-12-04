@@ -23,6 +23,8 @@ public class Application {
 		dataGenerator.tryQuery();
 		Object i = dataGenerator.test();
 		System.out.println(i);
+		i = dataGenerator.test2();
+		System.out.println(i);
 	}
 	
 }

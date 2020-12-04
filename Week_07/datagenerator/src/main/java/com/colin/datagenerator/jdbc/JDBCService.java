@@ -1,6 +1,8 @@
 package com.colin.datagenerator.jdbc;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,68 +11,49 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import javax.annotation.Resource;
+import javax.sql.DataSource;
 
+import org.apache.shardingsphere.shardingjdbc.api.yaml.YamlMasterSlaveDataSourceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import com.colin.datagenerator.annotation.ReadOnly;
+import com.colin.datagenerator.jdbc.annotation.ReadOnly;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Service
 public class JDBCService {
-	
-	@Autowired
-	String dataSourceUrl;
-	
-	@Autowired
-	String dataSourceUsername;
-	
-	@Autowired
-	String dataSourcePassword;
-	
-	Connection conn = null;
+
 	
 	Connection poolingConnection = null;
 	
-	public Connection getConnection() {
-		try {
-			if (conn != null) {
-				return conn;
-			}
-		    conn =
-		       DriverManager.getConnection(dataSourceUrl
-		                                   + "&user=" + dataSourceUsername
-		                                   + "&password=" + dataSourcePassword);
-		    System.out.println("connected to datasource, connection: " + conn);
-		    return conn;
-		} catch (SQLException ex) {
-		    // handle any errors
-		    System.out.println("SQLException: " + ex.getMessage());
-		    System.out.println("SQLState: " + ex.getSQLState());
-		    System.out.println("VendorError: " + ex.getErrorCode());
-		}
-		return null;
-	}
+	protected static ThreadLocal<Boolean> readOnly = new ThreadLocal<>();
 	
-	@SuppressWarnings("resource")
+	
 	public Connection getPoolingConnection() {
 		if (poolingConnection != null) {
 			return poolingConnection;
 		}
-		HikariDataSource ds = new HikariDataSource();
-		ds.setJdbcUrl(dataSourceUrl);
-		ds.setUsername(dataSourceUsername);
-		ds.setPassword(dataSourcePassword);
-		ds.addDataSourceProperty("cachePrepStmts", "true");
-	    ds.addDataSourceProperty("prepStmtCacheSize", "250");
-	    ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 	    try {
+//		HikariDataSource ds = new HikariDataSource();
+	        ClassPathResource classPathResource = new ClassPathResource("sharding-sphere.yml");
+	        DataSource ds = YamlMasterSlaveDataSourceFactory.createDataSource(
+	                classPathResource.getFile()
+	                );
+//	        ds.setJdbcUrl(dataSourceUrl);
+//	        ds.setUsername(dataSourceUsername);
+//	        ds.setPassword(dataSourcePassword);
+//	        ds.addDataSourceProperty("cachePrepStmts", "true");
+//	        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+//	        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 	    	poolingConnection = ds.getConnection();
 	    	return poolingConnection;
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		} catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 	    return null;
 	}
 	
@@ -78,17 +61,15 @@ public class JDBCService {
 	/**
 	 * 单次查询
 	 */
-	@ReadOnly
 	private void tryQuery(Connection conn) {
 		Statement stmt = null;
 		ResultSet rs = null;
 		try {
-			conn = getConnection();
 			stmt = conn.createStatement();
-			if (stmt.execute("SELECT * FROM t_client LIMIT 10")) {
+			if (stmt.execute("SELECT * FROM alum_APPInfo LIMIT 10")) {
 				rs = stmt.getResultSet();
 				while (rs.next()) {
-					System.out.println(rs);
+					System.out.println(rs.getString(1));
 				}
 			}
 		} catch (SQLException e) {
@@ -109,11 +90,6 @@ public class JDBCService {
 		        stmt = null;
 		    }
 		}
-	}
-	
-	@ReadOnly
-	public void tryQuery() {
-		tryQuery(getConnection());
 	}
 	
 	public void tryPoolingQuery() {
@@ -143,9 +119,6 @@ public class JDBCService {
 		}
 	}
 	
-	public void transactionalBatchUpdate() {
-		transactionalBatchUpdate(getConnection());
-	}
 	
 	public void poolingTransactionalBatchUpdate() {
 		transactionalBatchUpdate(getPoolingConnection());
@@ -180,4 +153,8 @@ public class JDBCService {
 		}
 	}
 	
+	
+	public void test() {
+	    System.out.println(readOnly.get());
+	}
 }

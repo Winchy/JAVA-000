@@ -1,0 +1,26 @@
+dataSources:
+    ds_master: !!org.apache.commons.dbcp2.BasicDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://rds-dev2.cro4hpsofg5i.rds.cn-northwest-1.amazonaws.com.cn:3306/tmp?generateSimpleParameterMetadata=true&useUnicode=true&characterEncoding=utf8
+        username: dev
+        password: dev7master
+    ds_slave0: !!org.apache.commons.dbcp2.BasicDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://rds-dev2.cro4hpsofg5i.rds.cn-northwest-1.amazonaws.com.cn:3306/tmp?generateSimpleParameterMetadata=true&useUnicode=true&characterEncoding=utf8
+        username: dev
+        password: dev7master 
+    ds_slave1: !!org.apache.commons.dbcp2.BasicDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://rds-dev2.cro4hpsofg5i.rds.cn-northwest-1.amazonaws.com.cn:3306/tmp?generateSimpleParameterMetadata=true&useUnicode=true&characterEncoding=utf8
+        username: dev
+        password: dev7master
+
+masterSlaveRule:
+  name: ds_ms
+  masterDataSourceName: ds_master
+  slaveDataSourceNames: 
+    - ds_slave0
+    - ds_slave1
+
+props:
+    sql.show: true

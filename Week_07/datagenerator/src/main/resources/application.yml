@@ -2,6 +2,8 @@
 spring:
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        username: root
-        password: '!WZ4mysql'
-        url: jdbc:mysql://localhost:3306/eshop?serverTimezone=UTC&useUnicode=true&characterEncoding=utf-8
+        username: dev
+        password: dev7master
+        url: jdbc:mysql://rds-dev2.cro4hpsofg5i.rds.cn-northwest-1.amazonaws.com.cn:3306/tmp?generateSimpleParameterMetadata=true&useUnicode=true&characterEncoding=utf8
+        
+        

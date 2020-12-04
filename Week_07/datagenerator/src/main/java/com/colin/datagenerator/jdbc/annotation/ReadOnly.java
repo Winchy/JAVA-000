@@ -1,4 +1,4 @@
-package com.colin.datagenerator.annotation;
+package com.colin.datagenerator.jdbc.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

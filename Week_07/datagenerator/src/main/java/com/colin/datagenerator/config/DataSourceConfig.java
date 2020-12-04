@@ -23,25 +23,15 @@ public class DataSourceConfig {
 		return dataSourceUrl;
 	}
 	
-	public void setDataSrouceUrl(String dsUrl) {
-		dataSourceUrl = dsUrl;
-	}
-
 	@Bean("dataSourceUsername")
 	public String getDataSourceUsername() {
 		return dataSourceUsername;
 	}
 
-	public void setDataSourceUsername(String dataSourceUsername) {
-		this.dataSourceUsername = dataSourceUsername;
-	}
 
 	@Bean("dataSourcePassword")
 	public String getDataSourcePassword() {
 		return dataSourcePassword;
 	}
 
-	public void setDataSourcePassword(String dataSourcePassword) {
-		this.dataSourcePassword = dataSourcePassword;
-	}
 }

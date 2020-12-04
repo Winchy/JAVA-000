@@ -8,7 +8,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.colin.datagenerator.annotation.ReadOnly;
+import com.colin.datagenerator.jdbc.annotation.ReadOnly;
 import com.colin.datagenerator.jdbc.JDBCService;
 import com.colin.datagenerator.jdbc.ParameterItem;
 
@@ -66,11 +66,18 @@ public class DataGenerator {
 	}
 	
 	public void tryQuery() {
-		jdbcService.tryQuery();
+		jdbcService.tryPoolingQuery();
+		jdbcService.poolingTransactionalBatchUpdate();
 	}
 	
 	@ReadOnly
 	public Object test() {
+	    jdbcService.test();
 		return Integer.valueOf(1);
 	}
+	
+	public Object test2() {
+        jdbcService.test();
+        return Integer.valueOf(2);
+    }
 }
