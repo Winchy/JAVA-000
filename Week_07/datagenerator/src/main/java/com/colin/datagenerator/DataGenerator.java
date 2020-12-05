@@ -1,26 +1,30 @@
 package com.colin.datagenerator;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 
-import com.colin.datagenerator.jdbc.annotation.ReadOnly;
-import com.colin.datagenerator.jdbc.JDBCService;
+import com.colin.datagenerator.jdbc.IJDBCService;
 import com.colin.datagenerator.jdbc.ParameterItem;
+import com.colin.datagenerator.jdbc.annotation.ReadOnly;
 
 @Service
 public class DataGenerator {
 
 	private static final int SHOP_NUM = 10000;
 	private static final int COMMODITY_NUM = 100;
-	private static final int CLIENT_NUM = 1000000;
+	private static final int CLIENT_NUM = 100000;
 	
-	@Autowired
-	JDBCService jdbcService;
+//	@Resource(name="shardingsphere")
+	@Resource(name="readwrite")
+	IJDBCService jdbcService;
 	
 	Snowflake snowflake = new Snowflake(1, 1, 1);;
 	Random rand = new Random();
@@ -61,23 +65,41 @@ public class DataGenerator {
 		jdbcService.batchSave(insertStatement, rows);
 	}
 	
-	private static void generateUser() {
-		
-	}
-	
-	public void tryQuery() {
-		jdbcService.tryPoolingQuery();
-		jdbcService.poolingTransactionalBatchUpdate();
+	public void generateUser() {
+		Long id;
+		String insertUserStatement = "insert into t_client (id, username, password, phone, gender, nickname) values (?, ?, password(?), ?, ?, ?) ";
+		for (int x = 0; x < CLIENT_NUM / 1000; ++x) {
+			System.out.println(x);
+			List<List<ParameterItem>> userRows = new LinkedList<>();
+			for (int y = 0; y < 1000; ++y) {
+				int i = y + x * 1000;
+				id = snowflake.nextId();
+				List<ParameterItem> parameters = new ArrayList<>();
+				parameters.add(new ParameterItem(Long.class, id));
+				parameters.add(new ParameterItem(String.class, "用户_" + i));
+				parameters.add(new ParameterItem(String.class, "password_" + i));
+				parameters.add(new ParameterItem(String.class, "18600000000" + rand.nextInt(100000)));
+				parameters.add(new ParameterItem(Integer.class, rand.nextInt(1)));
+				parameters.add(new ParameterItem(String.class, "阿"  + i));
+				userRows.add(parameters);
+			}
+			jdbcService.batchSave(insertUserStatement, userRows);
+		}
 	}
 	
 	@ReadOnly
-	public Object test() {
-	    jdbcService.test();
-		return Integer.valueOf(1);
+	public void checkRead() {
+		Random rand = new Random();
+		for (int i = 0; i < 10; ++i) {
+			ResultSet results = jdbcService.select("select flag from t_shop limit " + rand.nextInt(SHOP_NUM) + ", 1", null);
+			try {
+				if (results.next()) {
+					System.out.println(results.getInt(1));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	public Object test2() {
-        jdbcService.test();
-        return Integer.valueOf(2);
-    }
 }

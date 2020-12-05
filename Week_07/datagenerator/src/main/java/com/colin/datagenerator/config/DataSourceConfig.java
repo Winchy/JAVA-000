@@ -1,37 +1,19 @@
 package com.colin.datagenerator.config;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.List;
+import java.util.Map;
 
-@Configuration
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
+
+import lombok.Data;
+
+@Component
+@EnableConfigurationProperties
+@ConfigurationProperties(prefix = "datasources")
+@Data
 public class DataSourceConfig {
-	@Value("${spring.datasource.url}")
-	String dataSourceUrl;
-	
-	@Value("${spring.datasource.username}")
-	String dataSourceUsername;
-	
-	@Value("${spring.datasource.password}")
-	String dataSourcePassword;
-//	
-//	@Autowired
-//    private Environment environment;
-	
-	@Bean("dataSourceUrl")
-	public String getDatasourceUrl() {
-		return dataSourceUrl;
-	}
-	
-	@Bean("dataSourceUsername")
-	public String getDataSourceUsername() {
-		return dataSourceUsername;
-	}
-
-
-	@Bean("dataSourcePassword")
-	public String getDataSourcePassword() {
-		return dataSourcePassword;
-	}
-
+	Map<String, String> master;
+	List<Map<String, String>> slaves;
 }
